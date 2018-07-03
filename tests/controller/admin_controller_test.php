@@ -38,9 +38,6 @@ class admin_controller_test extends \phpbb_database_test_case
 	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\group\helper */
-	protected $group_helper;
-
 	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\ads\controller\admin_input */
 	protected $input;
 
@@ -49,6 +46,9 @@ class admin_controller_test extends \phpbb_database_test_case
 
 	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\ads\analyser\manager */
 	protected $analyser;
+
+	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\controller\helper */
+	protected $controller_helper;
 
 	/** @var string root_path */
 	protected $root_path;
@@ -83,7 +83,7 @@ class admin_controller_test extends \phpbb_database_test_case
 		parent::setUp();
 
 		global $phpbb_root_path, $phpEx;
-		global $phpbb_dispatcher;
+		global $phpbb_dispatcher, $cache, $db;
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 
@@ -100,7 +100,6 @@ class admin_controller_test extends \phpbb_database_test_case
 		$this->config = $this->getMockBuilder('\phpbb\config\config')
 			->disableOriginalConstructor()
 			->getMock();
-		$this->group_helper = new \phpbb\group\helper($this->language);
 		$this->input = $this->getMockBuilder('\phpbb\ads\controller\admin_input')
 			->disableOriginalConstructor()
 			->getMock();
@@ -110,11 +109,18 @@ class admin_controller_test extends \phpbb_database_test_case
 		$this->analyser = $this->getMockBuilder('\phpbb\ads\analyser\manager')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->controller_helper = $this->controller_helper = $this->getMockBuilder('\phpbb\controller\helper')
+			->disableOriginalConstructor()
+			->getMock();
+		$this->root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
 
 		$this->u_action = $phpbb_root_path . 'adm/index.php?i=-phpbb-ads-acp-main_module&mode=manage';
 
 		// Global variables
 		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
+		$cache = new \phpbb_mock_cache();
+		$db = $this->new_dbal();
 	}
 
 	/**
@@ -131,10 +137,12 @@ class admin_controller_test extends \phpbb_database_test_case
 			$this->manager,
 			$this->config_text,
 			$this->config,
-			$this->group_helper,
 			$this->input,
 			$this->helper,
-			$this->analyser
+			$this->analyser,
+			$this->controller_helper,
+			$this->root_path,
+			$this->php_ext
 		);
 		$controller->set_page_url($this->u_action);
 
@@ -157,46 +165,7 @@ class admin_controller_test extends \phpbb_database_test_case
 	{
 		$controller = $this->get_controller();
 
-		$this->config_text->expects($this->once())
-			->method('get')
-			->with('phpbb_ads_hide_groups')
-			->willReturn('[1,3]');
-
 		$this->config['phpbb_ads_adblocker_message'] = '1';
-
-		$this->manager->expects($this->once())
-			->method('load_groups')
-			->willReturn(array(
-				array(
-					'group_id'		=> 1,
-					'group_name'	=> 'ADMINISTRATORS',
-				),
-				array(
-					'group_id'		=> 2,
-					'group_name'	=> 'Custom group name',
-				),
-			));
-
-		$this->template->expects($this->exactly(2))
-			->method('assign_block_vars')
-			->withConsecutive(
-				array(
-					'groups',
-					array(
-						'ID'			=> '1',
-						'NAME'			=> 'Administrators',
-						'S_SELECTED'	=> true,
-					),
-				),
-				array(
-					'groups',
-					array(
-						'ID'			=> 2,
-						'NAME'			=> 'Custom group name',
-						'S_SELECTED'	=> false,
-					),
-				)
-			);
 
 		$this->template->expects($this->once())
 			->method('assign_vars')
@@ -256,11 +225,6 @@ class admin_controller_test extends \phpbb_database_test_case
 				->with('enable_clicks', 0)
 				->willReturn(1);
 
-			$this->request->expects($this->at(4))
-				->method('variable')
-				->with('hide_groups', array(0))
-				->willReturn($hide_group_data);
-
 			$this->config->expects($this->at(0))
 				->method('set')
 				->with('phpbb_ads_adblocker_message', $adblocker_data);
@@ -272,10 +236,6 @@ class admin_controller_test extends \phpbb_database_test_case
 			$this->config->expects($this->at(2))
 				->method('set')
 				->with('phpbb_ads_enable_clicks', 1);
-
-			$this->config_text->expects($this->once())
-				->method('set')
-				->with('phpbb_ads_hide_groups', json_encode($hide_group_data));
 
 			$this->setExpectedTriggerError(E_USER_NOTICE, 'ACP_AD_SETTINGS_SAVED');
 		}
@@ -321,10 +281,12 @@ class admin_controller_test extends \phpbb_database_test_case
 				$this->manager,
 				$this->config_text,
 				$this->config,
-				$this->group_helper,
 				$this->input,
 				$this->helper,
-				$this->analyser
+				$this->analyser,
+				$this->controller_helper,
+				$this->root_path,
+				$this->php_ext
 			))
 			->getMock();
 
@@ -385,6 +347,7 @@ class admin_controller_test extends \phpbb_database_test_case
 				'U_ACTION'				=> "{$this->u_action}&amp;action=add",
 				'PICKER_DATE_FORMAT'	=> ext::DATE_FORMAT,
 				'U_FIND_USERNAME'		=> 'u_find_username',
+				'U_ENABLE_VISUAL_DEMO'	=> null,
 			));
 
 		$this->request->expects($this->at(0))
@@ -542,8 +505,10 @@ class admin_controller_test extends \phpbb_database_test_case
 	public function action_add_data()
 	{
 		return array(
-			array(true),
-			array(false),
+			array(true, 0),
+			array(true, 2),
+			array(false, 0),
+			array(false, 2),
 		);
 	}
 
@@ -552,7 +517,7 @@ class admin_controller_test extends \phpbb_database_test_case
 	*
 	* @dataProvider action_add_data
 	*/
-	public function test_action_add_submit($s_error)
+	public function test_action_add_submit($s_error, $ad_owner)
 	{
 		$controller = $this->get_controller();
 
@@ -580,6 +545,7 @@ class admin_controller_test extends \phpbb_database_test_case
 			'ad_name'		=> 'Ad Name #1',
 			'ad_code'		=> 'Ad Code #1',
 			'ad_locations'	=> array(),
+			'ad_owner'		=> $ad_owner,
 		);
 
 		$this->input->expects($this->once())
@@ -606,6 +572,11 @@ class admin_controller_test extends \phpbb_database_test_case
 				->method('insert_ad')
 				->with($data)
 				->willReturn(1);
+
+			$this->manager->expects(($ad_owner ? $this->once() : $this->never()))
+				->method('get_ads_by_owner')
+				->with($ad_owner)
+				->willReturn(array());
 
 			$this->manager->expects($this->once())
 				->method('insert_ad_locations')
@@ -721,6 +692,7 @@ class admin_controller_test extends \phpbb_database_test_case
 					'U_ACTION'				=> "{$this->u_action}&amp;action=edit&amp;id=" . $ad_id,
 					'PICKER_DATE_FORMAT'	=> ext::DATE_FORMAT,
 					'U_FIND_USERNAME'		=> 'u_find_username',
+					'U_ENABLE_VISUAL_DEMO'	=> null,
 				));
 
 			$this->input->expects($this->once())
@@ -782,6 +754,7 @@ class admin_controller_test extends \phpbb_database_test_case
 				'U_ACTION'				=> "{$this->u_action}&amp;action=edit&amp;id=1",
 				'PICKER_DATE_FORMAT'	=> ext::DATE_FORMAT,
 				'U_FIND_USERNAME'		=> 'u_find_username',
+				'U_ENABLE_VISUAL_DEMO'	=> null,
 			));
 
 		$this->input->expects($this->once())
@@ -807,10 +780,11 @@ class admin_controller_test extends \phpbb_database_test_case
 	public function action_edit_data()
 	{
 		return array(
-			array(true, false),
-			array(false, true),
-			array(false, false),
-			array(true, true),
+			array(true, false, 0),
+			array(false, true, 0),
+			array(false, true, 2),
+			array(false, false, 0),
+			array(true, true, 0),
 		);
 	}
 
@@ -819,7 +793,7 @@ class admin_controller_test extends \phpbb_database_test_case
 	*
 	* @dataProvider action_edit_data
 	*/
-	public function test_action_edit_submit($s_error, $success)
+	public function test_action_edit_submit($s_error, $success, $ad_owner)
 	{
 		$controller = $this->get_controller();
 
@@ -853,10 +827,18 @@ class admin_controller_test extends \phpbb_database_test_case
 			->with('submit_edit')
 			->willReturn(true);
 
+		$old_data = array(
+			'ad_name'		=> 'Old Ad Name #1',
+			'ad_code'		=> 'Old Ad Code #1',
+			'ad_locations'	=> array(),
+			'ad_owner'		=> $ad_owner,
+		);
+
 		$data = array(
 			'ad_name'		=> 'Ad Name #1',
 			'ad_code'		=> 'Ad Code #1',
 			'ad_locations'	=> array(),
+			'ad_owner'		=> $ad_owner,
 		);
 
 		$this->input->expects($this->once())
@@ -887,6 +869,7 @@ class admin_controller_test extends \phpbb_database_test_case
 					'U_ACTION'				=> "{$this->u_action}&amp;action=edit&amp;id=1",
 					'PICKER_DATE_FORMAT'	=> ext::DATE_FORMAT,
 					'U_FIND_USERNAME'		=> 'u_find_username',
+					'U_ENABLE_VISUAL_DEMO'	=> null,
 				));
 
 			$this->input->expects($this->once())
@@ -899,6 +882,11 @@ class admin_controller_test extends \phpbb_database_test_case
 		}
 		else
 		{
+			$this->manager->expects(($this->once()))
+				->method('get_ad')
+				->with(1)
+				->willReturn($old_data);
+
 			$this->manager->expects($this->once())
 				->method('update_ad')
 				->with(1, $data)
@@ -906,6 +894,11 @@ class admin_controller_test extends \phpbb_database_test_case
 
 			if ($success)
 			{
+				$this->manager->expects(($ad_owner ? $this->exactly(2) : $this->never()))
+					->method('get_ads_by_owner')
+					->with($ad_owner)
+					->willReturn(array());
+
 				$this->manager->expects($this->once())
 					->method('delete_ad_locations')
 					->with(1);
@@ -1008,17 +1001,19 @@ class admin_controller_test extends \phpbb_database_test_case
 	public function action_delete_data()
 	{
 		return array(
-			array(999, true, true),
-			array(1, false, false),
-			array(1, false, true),
+			array(999, 0, true, true),
+			array(1, 0, false, false),
+			array(1, 0, false, true),
+			array(1, 2, false, true),
 		);
 	}
+
 	/**
-	* Test action_delete() method
-	*
-	* @dataProvider action_delete_data
-	*/
-	public function test_action_delete($ad_id, $error, $confirm)
+	 * Test action_delete() method
+	 *
+	 * @dataProvider action_delete_data
+	 */
+	public function test_action_delete($ad_id, $ad_owner, $error, $confirm)
 	{
 		self::$confirm = $confirm;
 
@@ -1039,6 +1034,11 @@ class admin_controller_test extends \phpbb_database_test_case
 				->method('variable')
 				->with('mode', '')
 				->willReturn('');
+
+			// called in list_ads()
+			$this->manager->expects($this->atMost(1))
+				->method('get_all_ads')
+				->willReturn(array());
 		}
 		else
 		{
@@ -1049,8 +1049,16 @@ class admin_controller_test extends \phpbb_database_test_case
 			else
 			{
 				$this->manager->expects($this->once())
+					->method('get_ad')
+					->with($ad_id)
+					->willReturn(array('id' => $ad_id, 'ad_owner' => $ad_owner));
+				$this->manager->expects($this->once())
 					->method('delete_ad')
 					->willReturn($ad_id ? true : false);
+				$this->manager->expects(($ad_owner ? $this->once() : $this->never()))
+					->method('get_ads_by_owner')
+					->with($ad_owner)
+					->willReturn(array());
 
 				$this->setExpectedTriggerError(E_USER_NOTICE, 'ACP_AD_DELETE_SUCCESS');
 			}

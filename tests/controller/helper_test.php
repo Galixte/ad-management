@@ -27,8 +27,14 @@ class helper_test extends \phpbb_database_test_case
 	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\log\log */
 	protected $log;
 
+	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\ads\ad\manager */
+	protected $manager;
+
 	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\ads\location\manager */
 	protected $location_manager;
+
+	/** @var \phpbb\group\helper */
+	protected $group_helper;
 
 	/** @var string */
 	protected $root_path;
@@ -74,9 +80,13 @@ class helper_test extends \phpbb_database_test_case
 		$this->log = $this->getMockBuilder('\phpbb\log\log')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->manager = $this->getMockBuilder('\phpbb\ads\ad\manager')
+			->disableOriginalConstructor()
+			->getMock();
 		$this->location_manager = $this->getMockBuilder('\phpbb\ads\location\manager')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->group_helper = new \phpbb\group\helper($this->language);
 		$this->root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 	}
@@ -94,7 +104,9 @@ class helper_test extends \phpbb_database_test_case
 			$this->language,
 			$this->template,
 			$this->log,
+			$this->manager,
 			$this->location_manager,
+			$this->group_helper,
 			$this->root_path,
 			$this->php_ext
 		);
@@ -117,9 +129,11 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_enabled'		=> '1',
 					  'ad_end_date'		=> '',
 					  'ad_priority'		=> '5',
+					  'ad_content_only'	=> '0',
 					  'ad_views_limit'	=> '0',
 					  'ad_clicks_limit'	=> '0',
 					  'ad_owner'			=> '0',
+					  'ad_centering'	=> '0',
 				  ), '', array('AD_PRIORITY_INVALID'), true, 'AD_PRIORITY_INVALID'),
 			array(array(
 					  'ad_name'			=> 'Ad Name #1',
@@ -128,9 +142,11 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_enabled'		=> '1',
 					  'ad_end_date'		=> '0',
 					  'ad_priority'		=> '5',
+					  'ad_content_only'	=> '0',
 					  'ad_views_limit'	=> '0',
 					  'ad_clicks_limit'	=> '0',
 					  'ad_owner'			=> '0',
+					  'ad_centering'	=> '0',
 				  ), '', array('AD_PRIORITY_INVALID', 'AD_NAME_REQUIRED'), true, 'AD_PRIORITY_INVALID<br />AD_NAME_REQUIRED'),
 			array(array(
 					  'ad_name'			=> 'Ad Name #2',
@@ -139,9 +155,11 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_enabled'		=> '0',
 					  'ad_end_date'		=> '1',
 					  'ad_priority'		=> '5',
+					  'ad_content_only'	=> '0',
 					  'ad_views_limit'	=> '0',
 					  'ad_clicks_limit'	=> '0',
 					  'ad_owner'			=> '99',
+					  'ad_centering'	=> '0',
 				  ), 'Anonymous', array(), false, ''),
 			array(array(
 					  'ad_name'			=> 'Ad Name #2',
@@ -150,9 +168,11 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_enabled'		=> '0',
 					  'ad_end_date'		=> '1970-01-01',
 					  'ad_priority'		=> '5',
+					  'ad_content_only'	=> '0',
 					  'ad_views_limit'	=> '0',
 					  'ad_clicks_limit'	=> '0',
 					  'ad_owner'			=> '99',
+					  'ad_centering'	=> '0',
 				  ), 'Anonymous', array(), false, ''),
 			array(array(
 					  'ad_name'			=> 'Ad Name #3',
@@ -161,9 +181,11 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_enabled'		=> '0',
 					  'ad_end_date'		=> '1483228800',
 					  'ad_priority'		=> '5',
+					  'ad_content_only'	=> '0',
 					  'ad_views_limit'	=> '0',
 					  'ad_clicks_limit'	=> '0',
 					  'ad_owner'			=> '2',
+					  'ad_centering'	=> '0',
 				  ), 'admin', array(), false, ''),
 		);
 	}
@@ -181,6 +203,10 @@ class helper_test extends \phpbb_database_test_case
 			->method('get_all_locations')
 			->willReturn(array());
 
+		$this->manager->expects($this->once())
+			->method('load_groups')
+			->willReturn(array());
+
 		$this->template->expects($this->once())
 			->method('assign_vars')
 			->with(array(
@@ -193,9 +219,11 @@ class helper_test extends \phpbb_database_test_case
 				'AD_ENABLED'      => $data['ad_enabled'],
 				'AD_END_DATE'     => $data['ad_end_date'],
 				'AD_PRIORITY'     => $data['ad_priority'],
+				'AD_CONTENT_ONLY' => $data['ad_content_only'],
 				'AD_VIEWS_LIMIT'  => $data['ad_views_limit'],
 				'AD_CLICKS_LIMIT' => $data['ad_clicks_limit'],
 				'AD_OWNER'        => $owner,
+				'AD_CENTERING'    => $data['ad_centering'],
 			));
 
 		$helper->assign_data($data, $errors);
@@ -210,7 +238,7 @@ class helper_test extends \phpbb_database_test_case
 	{
 		return array(
 			array(false),
-			array(array(1)),
+			array(array('top_of_page_1')),
 		);
 	}
 
@@ -226,35 +254,97 @@ class helper_test extends \phpbb_database_test_case
 		$this->location_manager->expects($this->once())
 			->method('get_all_locations')
 			->willReturn(array(
-				1	=> array(
-					'name'	=> 'Location #1',
-					'desc'	=> 'Location #1 desc',
+				'CAT_TOP_OF_PAGE'	=> array(
+					'top_of_page_1'	=> array(
+						'name'	=> 'Location #1',
+						'desc'	=> 'Location #1 desc',
+					),
 				),
-				2	=> array(
-					'name'	=> 'Location #2',
-					'desc'	=> 'Location #2 desc',
+				'CAT_BOTTOM_OF_PAGE'	=> array(
+					'bottom_of_page_1'	=> array(
+						'name'	=> 'Location #2',
+						'desc'	=> 'Location #2 desc',
+					),
 				),
 			));
 
 		$this->template->expects($this->at(0))
 			->method('assign_block_vars')
 			->with('ad_locations', array(
-				'LOCATION_ID'   => 1,
-				'LOCATION_DESC' => 'Location #1 desc',
-				'LOCATION_NAME' => 'Location #1',
-				'S_SELECTED'    => $ad_locations ? in_array(1, $ad_locations) : false,
+				'CATEGORY_NAME'  => 'CAT_TOP_OF_PAGE',
 			));
 
 		$this->template->expects($this->at(1))
 			->method('assign_block_vars')
 			->with('ad_locations', array(
-				'LOCATION_ID'   => 2,
+				'LOCATION_ID'   => 'top_of_page_1',
+				'LOCATION_DESC' => 'Location #1 desc',
+				'LOCATION_NAME' => 'Location #1',
+				'S_SELECTED'    => $ad_locations ? in_array('top_of_page_1', $ad_locations) : false,
+			));
+
+		$this->template->expects($this->at(2))
+			->method('assign_block_vars')
+			->with('ad_locations', array(
+				'CATEGORY_NAME'  => 'CAT_BOTTOM_OF_PAGE',
+			));
+
+		$this->template->expects($this->at(3))
+			->method('assign_block_vars')
+			->with('ad_locations', array(
+				'LOCATION_ID'   => 'bottom_of_page_1',
 				'LOCATION_DESC' => 'Location #2 desc',
 				'LOCATION_NAME' => 'Location #2',
-				'S_SELECTED'    => $ad_locations ? in_array(2, $ad_locations) : false,
+				'S_SELECTED'    => $ad_locations ? in_array('bottom_of_page_1', $ad_locations) : false,
 			));
 
 		$helper->assign_locations($ad_locations);
+	}
+
+	/**
+	 * Test assign_groups()
+	 */
+	public function test_assign_groups()
+	{
+		$helper = $this->get_helper();
+
+		$this->manager->expects($this->once())
+			->method('load_groups')
+			->willReturn(array(
+				array(
+					'group_id'			=> 1,
+					'group_name'		=> 'ADMINISTRATORS',
+					'group_selected'	=> true,
+				),
+				array(
+					'group_id'			=> 2,
+					'group_name'		=> 'Custom group name',
+					'group_selected'	=> false,
+				),
+			));
+
+		$this->template->expects($this->exactly(2))
+			->method('assign_block_vars')
+			->withConsecutive(
+				array(
+					'groups',
+					array(
+						'ID'			=> '1',
+						'NAME'			=> 'Administrators',
+						'S_SELECTED'	=> true,
+					),
+				),
+				array(
+					'groups',
+					array(
+						'ID'			=> 2,
+						'NAME'			=> 'Custom group name',
+						'S_SELECTED'	=> false,
+					),
+				)
+			);
+
+		$helper->assign_groups(0);
 	}
 
 	/**

@@ -13,7 +13,7 @@ namespace phpbb\ads\tests\functional;
 /**
 * @group functional
 */
-class acp_manage_test extends acp_base
+class acp_manage_test extends functional_base
 {
 	/**
 	* Test that Advertisement management ACP module appears
@@ -111,6 +111,8 @@ class acp_manage_test extends acp_base
 			'ad_views_limit'	=> 0,
 			'ad_clicks_limit'	=> 0,
 			'ad_owner'	=> 'admin',
+			'ad_groups'	=> [],
+			'ad_centering'	=> 1,
 		);
 
 		// Confirm preview
@@ -212,6 +214,8 @@ class acp_manage_test extends acp_base
 			'ad_views_limit'	=> 0,
 			'ad_clicks_limit'	=> 0,
 			'ad_owner'	=> 'admin',
+			'ad_groups'	=> [],
+			'ad_centering'	=> 1,
 		);
 
 		// Confirm preview

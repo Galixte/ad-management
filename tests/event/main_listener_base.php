@@ -18,7 +18,10 @@ class main_listener_base extends \phpbb_database_test_case
 	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\template\template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\template\context */
+	protected $template_context;
+
+	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\user */
 	protected $user;
 
 	/** @var string ads_table */
@@ -36,8 +39,17 @@ class main_listener_base extends \phpbb_database_test_case
 	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\controller\helper */
 	protected $controller_helper;
 
+	/** @var \PHPUnit_Framework_MockObject_MockObject|\phpbb\request\request */
+	protected $request;
+
+	/** @var string */
+	protected $php_ext;
+
 	/** @var string */
 	protected $ad_locations_table;
+
+	/** @var string */
+	protected $ad_group_table;
 
 	/**
 	* {@inheritDoc}
@@ -62,8 +74,12 @@ class main_listener_base extends \phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_root_path, $phpEx;
+		global $user, $phpbb_path_helper, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
+		$phpbb_path_helper = $this->getMockBuilder('\phpbb\path_helper')
+			->disableOriginalConstructor()
+			->getMock();
+		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
@@ -72,6 +88,7 @@ class main_listener_base extends \phpbb_database_test_case
 		$template = $this->getMock('\phpbb\template\template');
 		$this->ads_table = 'phpbb_ads';
 		$this->ad_locations_table = 'phpbb_ad_locations';
+		$this->ad_group_table = 'phpbb_ad_group';
 		// Location types
 		$locations = array(
 			'above_footer',
@@ -105,18 +122,18 @@ class main_listener_base extends \phpbb_database_test_case
 
 		// Load/Mock classes required by the listener class
 		$this->template = $this->getMock('\phpbb\template\template');
+		$this->template_context = $this->getMock('\phpbb\template\context');
 		$this->user = $this->getMockBuilder('\phpbb\user')
 			->disableOriginalConstructor()
 			->getMock();
-		$this->config_text = $this->getMockBuilder('\phpbb\config\db_text')
-			->disableOriginalConstructor()
-			->getMock();
 		$this->config = new \phpbb\config\config(array('phpbb_ads_adblocker_message' => '0'));
-		$this->manager = new \phpbb\ads\ad\manager($this->new_dbal(), $this->config, $this->ads_table, $this->ad_locations_table);
+		$this->manager = new \phpbb\ads\ad\manager($this->new_dbal(), $this->config, $this->ads_table, $this->ad_locations_table, $this->ad_group_table);
 		$this->location_manager = new \phpbb\ads\location\manager($location_types);
 		$this->controller_helper = $this->controller_helper = $this->getMockBuilder('\phpbb\controller\helper')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->request = $this->getMock('\phpbb\request\request');
+		$this->php_ext = $phpEx;
 	}
 
 	/**
@@ -128,12 +145,14 @@ class main_listener_base extends \phpbb_database_test_case
 	{
 		return new \phpbb\ads\event\main_listener(
 			$this->template,
+			$this->template_context,
 			$this->user,
-			$this->config_text,
 			$this->config,
 			$this->manager,
 			$this->location_manager,
-			$this->controller_helper
+			$this->controller_helper,
+			$this->request,
+			$this->php_ext
 		);
 	}
 }

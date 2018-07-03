@@ -31,15 +31,18 @@ class functional_base extends \phpbb_functional_test_case
 		parent::setUp();
 
 		$this->add_lang_ext('phpbb/ads', array(
-			'info_acp_phpbb_ads',
 			'acp',
+			'common',
+			'info_acp_phpbb_ads',
+			'info_ucp_phpbb_ads',
+			'ucp',
 		));
 
 		$this->login();
 		$this->admin_login();
 	}
 
-	protected function create_ad($location, $end_date = '')
+	protected function create_ad($location, $end_date = '', $content_only = false, $centering = true)
 	{
 		// Load Advertisement management ACP page
 		$crawler = self::request('GET', "adm/index.php?i=-phpbb-ads-acp-main_module&mode=manage&sid={$this->sid}");
@@ -57,6 +60,9 @@ class functional_base extends \phpbb_functional_test_case
 			'ad_locations'	=> array($location),
 			'ad_end_date'	=> $end_date,
 			'ad_priority'	=> 5,
+			'ad_content_only'	=> $content_only,
+			'ad_groups'		=> [],
+			'ad_centering'	=> $centering,
 		);
 
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
