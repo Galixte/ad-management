@@ -1,11 +1,11 @@
 <?php
 /**
  *
- * Advertisement management. An extension for the phpBB Forum Software package.
+ * Advertisement Management. An extension for the phpBB Forum Software package.
  * French translation by Galixte (http://www.galixte.com)
  *
- * @copyright (c) 2017 phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
+ * @copyright (c) 2018 phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0-only)
  *
  */
 
@@ -61,8 +61,11 @@ $lang = array_merge($lang, array(
 	'AD_PLACEMENT'				=> 'Emplacement de la publicité',
 	'AD_LOCATIONS'				=> 'Emplacements',
 	'AD_LOCATIONS_EXPLAIN'		=> 'Permet de sélectionner les emplacements où cette publicité sera affichée. Au survol de la souris sur un emplacement une courte description s’affichera. Si plusieurs publicités utilisent le même emplacement, une seule d’entre elles sera sélectionnée aléatoirement pour être affichée à cet emplacement lors du chargement de la page.<br />Il est nécessaire d’utiliser la combinaison de la touche CTRL et du clic gauche (touche CMD + clic sur Mac) pour sélectionner/désélectionner plusieurs emplacements.',
+	'AD_LOCATIONS_VISUAL_DEMO'	=> 'Démarrer la démonstration visuelle des emplacements publicitaires',
 	'AD_PRIORITY'				=> 'Niveau de priorité',
 	'AD_PRIORITY_EXPLAIN'		=> 'Permet de saisir une valeur comprise entre 1 & 10 correspondant au niveau de priorité. Les publicités ayant un niveau de priorité plus élevé s’afficheront plus souvent.',
+	'AD_CONTENT_ONLY'			=> 'Afficher uniquement sur les pages de contenu',
+	'AD_CONTENT_ONLY_EXPLAIN'	=> 'Permet d’afficher cette publicité uniquement sur les pages ayant du contenu. Elle ne sera pas affichée sur des pages telles que l’PCU (Panneau de l’utilisateur), de connexion, d’enregistrement, etc.. Certains services de publicités (tel que Google AdSense) requièrent ce dispositif.',
 	'AD_OPTIONS'				=> 'Options de la publicité',
 	'AD_OWNER'					=> 'Propriétaire',
 	'AD_OWNER_EXPLAIN'			=> 'Permet de définir le membre ayant la permission de voir les statistiques sur le nombre de vues et de clics de la publicité depuis la « Panneau de l’utilisateur ».',
@@ -74,6 +77,8 @@ $lang = array_merge($lang, array(
 	'AD_CLICKS_LIMIT_EXPLAIN'	=> 'Permet de saisir le nombre maximum de clics autorisés sur la publicité, après lequel celle-ci ne sera plus affichée. Saisir la valeur 0 pour l’afficher indéfiniment.',
 	'AD_END_DATE'				=> 'Date d’expiration',
 	'AD_END_DATE_EXPLAIN'		=> 'Permet de saisir la date d’expiration après laquelle l’affichage de cette publicité sera désactivé. Laisser ce champ vide pour afficher indéfiniment cette publicité. Il est nécessaire d’utiliser le format suivant :<samp>AAAA-MM-JJ</samp>.',
+	'AD_CENTERING'				=> 'Centre cettte publicité automatiquement',
+	'AD_CENTERING_EXPLAIN'		=> 'Permet de centrer automatiquemernt la publicité. Si des problèmes d’affichage sont constatés merci de définir la publicité centrée directement dans la CSS.',
 
 	'AD_PREVIEW'				=> 'Aperçu de cette publicité',
 	'AD_ENABLE_TITLE'			=> array( // Plural rule doesn't apply here! Just translate the values.
@@ -108,39 +113,16 @@ $lang = array_merge($lang, array(
 
 	// Analyser tests
 	'UNSECURE_CONNECTION'	=> '<strong>Contenu mixte</strong><br />Le forum fonctionne depuis une connexion HTTPS sécurisée, cependant le code de la publicité tente de charger du contenu depuis une connexion HTTP non sécurisée. La conséquence de cette situation pour les navigateurs Web est l’affichage d’avertissements à propos de « Contenus mixtes » aux utilisateurs du forum les informant de la présence de contenus non sécurisés sur le forum.',
-	'SCRIPT_WITHOUT_ASYNC'	=> '<strong>Code Javascript asynchrone</strong><br />Le code cde cette publicité charge du code JavaScript de manière asynchrone. Cela signifie qu’il bloquera tout autre code Javascript jusqu’à son chargement complet, ayant pour conséquence de dégrader les performances. L’utilisation de l’attribut <samp>async</samp> permet d’améliorer la chargement de la page.',
+	'SCRIPT_WITHOUT_ASYNC'	=> '<strong>Code Javascript asynchrone</strong><br />Le code de cette publicité charge du code JavaScript de manière asynchrone. Cela signifie qu’il bloquera tout autre code Javascript jusqu’à son chargement complet, ayant pour conséquence de dégrader les performances. L’utilisation de l’attribut <samp>async</samp> permet d’améliorer la chargement de la page.',
 	'ALERT_USAGE'			=> '<strong>Utilisation de <samp>alert()</samp></strong><br />Le code utilise la fonction <samp>alert()</samp> ce qui n’est pas une pratique conforme et peut distraire les utilisateurs. Certains navigateurs Web peuvent bloquer le chargement de la page et afficher des avertissements aux utilisateurs.',
 	'LOCATION_CHANGE'		=> '<strong>Redirection</strong><br />Le code semble rediriger l’utilisateur vers une autre page ou site Web. Les redirections envoient les utilisateurs vers des destinations parfois hasardeuses, voire souvent malveillantes. Merci de s’assurer de l’intégrité de la destination de la redirection dans le code de la publicité.',
 
-	// Template locations
-	'AD_ABOVE_HEADER'				=> 'Au-dessus de l’entête',
-	'AD_ABOVE_HEADER_DESC'			=> 'Permet d’afficher la publicité sur chaque page au-dessus de l’entête du forum.',
-	'AD_BELOW_HEADER'				=> 'En dessous de l’entête',
-	'AD_BELOW_HEADER_DESC'			=> 'Permet d’afficher la publicité sur chaque page en dessous de l’entête du forum (et au-dessus de la barre de navigation).',
-	'AD_BEFORE_POSTS'				=> 'Au-dessus des messages',
-	'AD_BEFORE_POSTS_DESC'			=> 'Permet d’afficher la publicité sur la page de la vue du sujet au-dessus du premier message.',
-	'AD_AFTER_POSTS'				=> 'En dessous des messages',
-	'AD_AFTER_POSTS_DESC'			=> 'Permet d’afficher la publicité sur la page de la vue du sujet en dessous du dernier message.',
-	'AD_BELOW_FOOTER'				=> 'En dessous du pied de page',
-	'AD_BELOW_FOOTER_DESC'			=> 'Permet d’afficher la publicité sur chaque page en dessous du pied de page du forum.',
-	'AD_ABOVE_FOOTER'				=> 'Au-dessus du pied de page',
-	'AD_ABOVE_FOOTER_DESC'			=> 'Permet d’afficher la publicité sur chaque page au-dessus du pied de page du forum.',
-	'AD_AFTER_FIRST_POST'			=> 'En dessous du premier message',
-	'AD_AFTER_FIRST_POST_DESC'		=> 'Permet d’afficher la publicité sur la page de la vue du sujet en dessous du premier message.',
-	'AD_AFTER_NOT_FIRST_POST'		=> 'En dessous de chaque message excepté le premier',
-	'AD_AFTER_NOT_FIRST_POST_DESC'	=> 'Permet d’afficher la publicité sur la page de la vue du sujet en dessous de chaque message excepté le premier.',
-	'AD_BEFORE_PROFILE'				=> 'Au-dessus du profil',
-	'AD_BEFORE_PROFILE_DESC'		=> 'Permet d’afficher la publicité sur la page du profil du membre au-dessus du contenu.',
-	'AD_AFTER_PROFILE'				=> 'En dessous du profil',
-	'AD_AFTER_PROFILE_DESC'			=> 'Permet d’afficher la publicité sur la page du profil du membre en dessous du contenu.',
-	'AD_AFTER_HEADER_NAVBAR'		=> 'En dessous de la barre de navigation de l’entête',
-	'AD_AFTER_HEADER_NAVBAR_DESC'	=> 'Permet d’afficher la publicité sur chaque page en dessous de la barre de navigation de l’entête du forum.',
-	'AD_AFTER_FOOTER_NAVBAR'		=> 'En dessous de la barre de navigation du pied de page',
-	'AD_AFTER_FOOTER_NAVBAR_DESC'	=> 'Permet d’afficher la publicité sur chaque page en dessous de la barre de navigation du pied de page du forum.',
-	'AD_POP_UP'						=> 'Pop-up',
-	'AD_POP_UP_DESC'				=> 'Permet d’afficher la publicité un fois par jour en superposition du forum. L’utilisateur devra fermer la fenêtre pour continuer sa visite du forum. Merci de considérer que ce type d’affichage est intrusif pour l’utilisateur !',
-	'AD_SLIDE_UP'					=> 'Défilement vers le haut',
-	'AD_SLIDE_UP_DESC'				=> 'Permet d’afficher la publicité sur chaque page lorsque l’utilisateur fait défiler la page vers le bas. La publicité défile vers le haut en partant du bas de la page, au centre.',
+	// Template location categories
+	'CAT_TOP_OF_PAGE'		=> 'En haut de la page',
+	'CAT_BOTTOM_OF_PAGE'	=> 'En bas de la page',
+	'CAT_IN_POSTS'			=> 'Dans les messages',
+	'CAT_OTHER'				=> 'Autre',
+	'CAT_INTERACTIVE'		=> 'Interactive',
 
 	// Settings
 	'ADBLOCKER_LEGEND'				=> 'Bloqueurs de publicités',
@@ -151,8 +133,8 @@ $lang = array_merge($lang, array(
 	'ENABLE_VIEWS_EXPLAIN'			=> 'Permet d’activer le compteur de vues pour chaque publicité affichée. Information : cette fonctionnalité peut augmenter la charge du serveur sur lequel le forum est hébergé, si aucun besoin n’est établi il est préférable de la désactiver.',
 	'ENABLE_CLICKS'					=> 'Compteur de clics',
 	'ENABLE_CLICKS_EXPLAIN'			=> 'Permet d’activer le compteur de clics pour chaque publicité ayant reçu des clics. Information : cette fonctionnalité peut augmenter la charge du serveur sur lequel le forum est hébergé, si aucun besoin n’est établi il est préférable de la désactiver.',
-	'HIDE_GROUPS'					=> 'Masquer les publicités aux groupes',
-	'HIDE_GROUPS_EXPLAIN'			=> 'Permet de sélectionner les groupes de membres qui ne verront pas les publicités.<br />Il est nécessaire d’utiliser la combinaison de la touche CTRL et du clic gauche (touche CMD + clic sur Mac) pour sélectionner/désélectionner plusieurs groupes.',
+	'HIDE_GROUPS'					=> 'Masquer la publicité aux groupes',
+	'HIDE_GROUPS_EXPLAIN'			=> 'Permet de sélectionner les groupes de membres qui ne verront pas cette publicité.<br />Il est nécessaire d’utiliser la combinaison de la touche CTRL et du clic gauche (touche CMD + clic sur Mac) pour sélectionner/désélectionner plusieurs groupes.',
 
 	'ACP_AD_SETTINGS_SAVED'	=> 'Les paramètres de gestion des publicités ont été sauvegardés.',
 ));
