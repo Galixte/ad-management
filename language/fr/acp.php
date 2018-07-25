@@ -77,8 +77,8 @@ $lang = array_merge($lang, array(
 	'AD_CLICKS_LIMIT_EXPLAIN'	=> 'Permet de saisir le nombre maximum de clics autorisés sur la publicité, après lequel celle-ci ne sera plus affichée. Saisir la valeur 0 pour l’afficher indéfiniment.',
 	'AD_END_DATE'				=> 'Date d’expiration',
 	'AD_END_DATE_EXPLAIN'		=> 'Permet de saisir la date d’expiration après laquelle l’affichage de cette publicité sera désactivé. Laisser ce champ vide pour afficher indéfiniment cette publicité. Il est nécessaire d’utiliser le format suivant :<samp>AAAA-MM-JJ</samp>.',
-	'AD_CENTERING'				=> 'Centre cettte publicité automatiquement',
-	'AD_CENTERING_EXPLAIN'		=> 'Permet de centrer automatiquemernt la publicité. Si des problèmes d’affichage sont constatés merci de définir la publicité centrée directement dans la CSS.',
+	'AD_CENTERING'				=> 'Centrer cette publicité automatiquement',
+	'AD_CENTERING_EXPLAIN'		=> 'Permet de centrer automatiquemernt la publicité. Si des problèmes d’affichage sont constatés merci de définir la publicité centrée directement depuis la CSS.',
 
 	'AD_PREVIEW'				=> 'Aperçu de cette publicité',
 	'AD_ENABLE_TITLE'			=> array( // Plural rule doesn't apply here! Just translate the values.
