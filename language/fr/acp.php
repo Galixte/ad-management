@@ -75,10 +75,12 @@ $lang = array_merge($lang, array(
 	'AD_CLICKS'					=> 'Clics',
 	'AD_CLICKS_LIMIT'			=> 'Nombre maximum de clics',
 	'AD_CLICKS_LIMIT_EXPLAIN'	=> 'Permet de saisir le nombre maximum de clics autorisés sur la publicité, après lequel celle-ci ne sera plus affichée. Saisir la valeur 0 pour l’afficher indéfiniment.',
+	'AD_START_DATE'				=> 'Date de démarrage de l’affichage',
+	'AD_START_DATE_EXPLAIN'		=> 'Permet de définir la date de démarrage de l’affichage de la publicité. Laisser de champ vide pour ne pas activer automatiquement l’affichage de la publicité. Merci d’utiliser le format suivant : <samp>AAAA-MM-JJ</samp>.',
 	'AD_END_DATE'				=> 'Date d’expiration',
 	'AD_END_DATE_EXPLAIN'		=> 'Permet de saisir la date d’expiration après laquelle l’affichage de cette publicité sera désactivé. Laisser ce champ vide pour afficher indéfiniment cette publicité. Il est nécessaire d’utiliser le format suivant :<samp>AAAA-MM-JJ</samp>.',
 	'AD_CENTERING'				=> 'Centrer cette publicité automatiquement',
-	'AD_CENTERING_EXPLAIN'		=> 'Permet de centrer automatiquemernt la publicité. Si des problèmes d’affichage sont constatés merci de définir la publicité centrée directement depuis la CSS.',
+	'AD_CENTERING_EXPLAIN'		=> 'Permet de centrer automatiquement la publicité. Si des problèmes d’affichage sont constatés merci de définir la publicité centrée directement depuis la CSS.',
 
 	'AD_PREVIEW'				=> 'Aperçu de cette publicité',
 	'AD_ENABLE_TITLE'			=> array( // Plural rule doesn't apply here! Just translate the values.
@@ -93,6 +95,7 @@ $lang = array_merge($lang, array(
 	'AD_NAME_REQUIRED'			=> 'Un nom est requis.',
 	'AD_NAME_TOO_LONG'			=> 'La longueur du nom est limité à %d caractères.',
 	'AD_CODE_ILLEGAL_CHARS'		=> 'Le code de la publicité contient des caractères qui ne sont pas supportés : %s',
+	'AD_START_DATE_INVALID'		=> 'La date de démarrage de l’affichage de la publicité a expiré ou est incorrecte.',
 	'AD_END_DATE_INVALID'		=> 'La date limite d’expiration est incorrecte ou déjà expiré.',
 	'AD_PRIORITY_INVALID'		=> 'Ce niveau de priorité est incorrect. Merci de saisir un nombre compris entre 1 & 10.',
 	'AD_VIEWS_LIMIT_INVALID'	=> 'Le nombre limite de vues est incorrect. Merci de saisir une valeur positive.',
@@ -101,6 +104,7 @@ $lang = array_merge($lang, array(
 	'NO_FILE_SELECTED'			=> 'Aucun fichier n’a été sélectionné.',
 	'CANNOT_CREATE_DIRECTORY'	=> 'Le répertoire <samp>phpbb_ads</samp> ne peut être créé. Merci de contrôler les permissions en écriture sur le répertoire <samp>/images</samp>.',
 	'FILE_MOVE_UNSUCCESSFUL'	=> 'Il est impossible de déplacer le fichier dans le répertoire <samp>images/phpbb_ads</samp>.',
+	'END_DATE_TOO_SOON'			=> 'La date d’expiration de l’affichage de la publicité est définie avant la date de son démarrage.',
 	'ACP_AD_DOES_NOT_EXIST'		=> 'Cette publicité n’existe pas.',
 	'ACP_AD_ADD_SUCCESS'		=> 'Publicité ajoutée avec succès.',
 	'ACP_AD_EDIT_SUCCESS'		=> 'Publicité modifiée avec succès.',
@@ -123,6 +127,7 @@ $lang = array_merge($lang, array(
 	'CAT_IN_POSTS'			=> 'Dans les messages',
 	'CAT_OTHER'				=> 'Autre',
 	'CAT_INTERACTIVE'		=> 'Interactive',
+	'CAT_SPECIAL'			=> 'Spéciale',
 
 	// Settings
 	'ADBLOCKER_LEGEND'				=> 'Bloqueurs de publicités',

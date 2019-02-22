@@ -40,6 +40,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'AD_NAME'		=> 'Nom',
+	'AD_START_DATE'	=> 'Date de démarrage de l’affichage',
 	'AD_END_DATE'	=> 'Date d’expiration de l’affichage',
 	'AD_VIEWS'		=> 'Vues',
 	'AD_CLICKS'		=> 'Clics',

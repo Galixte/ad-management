@@ -78,4 +78,6 @@ $lang = array_merge($lang, array(
 	'AD_POP_UP_DESC'				=> 'Permet d’afficher la publicité un fois par jour en superposition du forum. L’utilisateur devra fermer la fenêtre pour continuer sa visite du forum. Merci de considérer que ce type d’affichage est intrusif pour l’utilisateur !',
 	'AD_SLIDE_UP'					=> 'Défilement vers le haut',
 	'AD_SLIDE_UP_DESC'				=> 'Permet d’afficher la publicité sur chaque page lorsque l’utilisateur fait défiler la page vers le bas. La publicité défile vers le haut en partant du bas de la page, au centre.',
+	'AD_SCRIPTS'					=> 'Scripts',
+	'AD_SCRIPTS_DESC'				=> 'Permet dans cet emplacement spécialement dédié au langage JavaScript de saisir du code tel que celui du service AdSense ou pour des codes de type « tracking », etc. Le code saisi sera inséré dans la balise HEAD de la page, uniquement dans le but d’aider au bon fonctionnement des scripts.',
 ));
