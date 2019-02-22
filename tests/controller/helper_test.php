@@ -76,7 +76,9 @@ class helper_test extends \phpbb_database_test_case
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 		$this->user->timezone = new \DateTimeZone('UTC');
 		$this->user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, 'phpbb_users');
-		$this->template = $this->getMock('\phpbb\template\template');
+		$this->template = $this->getMockBuilder('\phpbb\template\template')
+			->disableOriginalConstructor()
+			->getMock();
 		$this->log = $this->getMockBuilder('\phpbb\log\log')
 			->disableOriginalConstructor()
 			->getMock();
@@ -127,6 +129,7 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_note'			=> 'Ad Note #1',
 					  'ad_code'			=> 'Ad Code #1',
 					  'ad_enabled'		=> '1',
+					  'ad_start_date'	=> '',
 					  'ad_end_date'		=> '',
 					  'ad_priority'		=> '5',
 					  'ad_content_only'	=> '0',
@@ -140,6 +143,7 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_note'			=> 'Ad Note #1',
 					  'ad_code'			=> 'Ad Code #1',
 					  'ad_enabled'		=> '1',
+					  'ad_start_date'	=> '0',
 					  'ad_end_date'		=> '0',
 					  'ad_priority'		=> '5',
 					  'ad_content_only'	=> '0',
@@ -153,6 +157,7 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_note'			=> 'Ad Note #2',
 					  'ad_code'			=> 'Ad Code #2',
 					  'ad_enabled'		=> '0',
+					  'ad_start_date'	=> '1',
 					  'ad_end_date'		=> '1',
 					  'ad_priority'		=> '5',
 					  'ad_content_only'	=> '0',
@@ -166,6 +171,7 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_note'			=> 'Ad Note #2',
 					  'ad_code'			=> 'Ad Code #2',
 					  'ad_enabled'		=> '0',
+					  'ad_start_date'	=> '1970-01-01',
 					  'ad_end_date'		=> '1970-01-01',
 					  'ad_priority'		=> '5',
 					  'ad_content_only'	=> '0',
@@ -179,6 +185,7 @@ class helper_test extends \phpbb_database_test_case
 					  'ad_note'			=> 'Ad Note #3',
 					  'ad_code'			=> 'Ad Code #3',
 					  'ad_enabled'		=> '0',
+					  'ad_start_date'	=> '1483228800',
 					  'ad_end_date'		=> '1483228800',
 					  'ad_priority'		=> '5',
 					  'ad_content_only'	=> '0',
@@ -217,6 +224,7 @@ class helper_test extends \phpbb_database_test_case
 				'AD_NOTE'         => $data['ad_note'],
 				'AD_CODE'         => $data['ad_code'],
 				'AD_ENABLED'      => $data['ad_enabled'],
+				'AD_START_DATE'   => $data['ad_start_date'],
 				'AD_END_DATE'     => $data['ad_end_date'],
 				'AD_PRIORITY'     => $data['ad_priority'],
 				'AD_CONTENT_ONLY' => $data['ad_content_only'],
@@ -382,6 +390,7 @@ class helper_test extends \phpbb_database_test_case
 	{
 		return array(
 			array(array(
+				'ad_start_date'		=> '1',
 				'ad_end_date'		=> '1',
 				'ad_views_limit'	=> '',
 				'ad_views'			=> '',
@@ -389,6 +398,7 @@ class helper_test extends \phpbb_database_test_case
 				'ad_clicks'			=> '',
 			), true),
 			array(array(
+				'ad_start_date'		=> '0',
 				'ad_end_date'		=> '0',
 				'ad_views_limit'	=> '1',
 				'ad_views'			=> '2',
@@ -396,6 +406,7 @@ class helper_test extends \phpbb_database_test_case
 				'ad_clicks'			=> '',
 			), true),
 			array(array(
+				'ad_start_date'		=> '0',
 				'ad_end_date'		=> '0',
 				'ad_views_limit'	=> '0',
 				'ad_views'			=> '0',
@@ -403,6 +414,7 @@ class helper_test extends \phpbb_database_test_case
 				'ad_clicks'			=> '2',
 			), true),
 			array(array(
+				'ad_start_date'		=> '9999999999',
 				'ad_end_date'		=> '9999999999',
 				'ad_views_limit'	=> '0',
 				'ad_views'			=> '0',
@@ -410,6 +422,7 @@ class helper_test extends \phpbb_database_test_case
 				'ad_clicks'			=> '0',
 			), false),
 			array(array(
+				'ad_start_date'		=> '0',
 				'ad_end_date'		=> '0',
 				'ad_views_limit'	=> '0',
 				'ad_views'			=> '1',
@@ -417,6 +430,7 @@ class helper_test extends \phpbb_database_test_case
 				'ad_clicks'			=> '0',
 			), false),
 			array(array(
+				'ad_start_date'		=> '0',
 				'ad_end_date'		=> '0',
 				'ad_views_limit'	=> '0',
 				'ad_views'			=> '0',
@@ -424,6 +438,7 @@ class helper_test extends \phpbb_database_test_case
 				'ad_clicks'			=> '1',
 			), false),
 			array(array(
+				'ad_start_date'		=> '0',
 				'ad_end_date'		=> '0',
 				'ad_views_limit'	=> '0',
 				'ad_views'			=> '0',

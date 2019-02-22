@@ -88,9 +88,13 @@ class admin_controller_test extends \phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 
 		// Load/Mock classes required by the controller class
-		$this->template = $this->getMock('\phpbb\template\template');
+		$this->template = $this->getMockBuilder('\phpbb\template\template')
+			->disableOriginalConstructor()
+			->getMock();
 		$this->language = new \phpbb\language\language($lang_loader);
-		$this->request = $this->getMock('\phpbb\request\request');
+		$this->request = $this->getMockBuilder('\phpbb\request\request')
+			->disableOriginalConstructor()
+			->getMock();
 		$this->manager = $this->getMockBuilder('\phpbb\ads\ad\manager')
 			->disableOriginalConstructor()
 			->getMock();
@@ -653,6 +657,7 @@ class admin_controller_test extends \phpbb_database_test_case
 			'ad_note'			=> 'Ad description #1',
 			'ad_code'			=> 'Ad Code #1',
 			'ad_enabled'		=> '1',
+			'ad_start_date'		=> '1514764800',
 			'ad_end_date'		=> '2051308800',
 			'ad_priority'		=> '5',
 			'ad_views_limit'	=> '0',
@@ -1083,12 +1088,14 @@ class admin_controller_test extends \phpbb_database_test_case
 				'ad_id'			=> 1,
 				'ad_name'		=> '',
 				'ad_enabled'	=> 1,
+				'ad_start_date'	=> 0,
 				'ad_end_date'	=> 0,
 			),
 			array(
 				'ad_id'			=> 2,
 				'ad_name'		=> '',
 				'ad_enabled'	=> 1,
+				'ad_start_date'	=> 0,
 				'ad_end_date'	=> 1,
 			),
 		);
