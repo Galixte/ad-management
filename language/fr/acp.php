@@ -78,7 +78,7 @@ $lang = array_merge($lang, array(
 	'AD_START_DATE'				=> 'Date de démarrage de l’affichage',
 	'AD_START_DATE_EXPLAIN'		=> 'Permet de définir la date de démarrage de l’affichage de la publicité. Laisser de champ vide pour ne pas activer automatiquement l’affichage de la publicité. Merci d’utiliser le format suivant : <samp>AAAA-MM-JJ</samp>.',
 	'AD_END_DATE'				=> 'Date d’expiration',
-	'AD_END_DATE_EXPLAIN'		=> 'Permet de saisir la date d’expiration après laquelle l’affichage de cette publicité sera désactivé. Laisser ce champ vide pour afficher indéfiniment cette publicité. Il est nécessaire d’utiliser le format suivant :<samp>AAAA-MM-JJ</samp>.',
+	'AD_END_DATE_EXPLAIN'		=> 'Permet de saisir la date d’expiration après laquelle l’affichage de cette publicité sera désactivé. Laisser ce champ vide pour afficher indéfiniment cette publicité. Il est nécessaire d’utiliser le format suivant : <samp>AAAA-MM-JJ</samp>.',
 	'AD_CENTERING'				=> 'Centrer cette publicité automatiquement',
 	'AD_CENTERING_EXPLAIN'		=> 'Permet de centrer automatiquement la publicité. Si des problèmes d’affichage sont constatés merci de définir la publicité centrée directement depuis la CSS.',
 
